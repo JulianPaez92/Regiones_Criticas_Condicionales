@@ -8,27 +8,28 @@ logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message
 
 class Recurso1(Recurso):
     dato1 = 0
-    numLectores = 0
+    numEscritores = 0
 
 recurso1 = Recurso1()
 
-def condicionEscritor():
-    return recurso1.numLectores == 0
+def condicionLector():
+    return recurso1.numEscritores == 0
 
-regionLector = Region(recurso1)
-regionEscritor = RegionCondicional(recurso1, condicionEscritor)
+regionLector = RegionCondicional(recurso1, condicionLector)
+regionEscritor = Region(recurso1)
 
-@regionLector.region
+@regionLector.condicion
 def seccionCriticaLector():
-    regionLector.recurso.numLectores += 1
     logging.info(f'Lector lee dato1 = {regionLector.recurso.dato1}')
-    time.sleep(1)
-    regionLector.recurso.numLectores -= 1
 
-@regionEscritor.condicion
+@regionEscritor.region
 def seccionCriticaEscritor():
+    regionEscritor.recurso.numEscritores += 1
     regionEscritor.recurso.dato1 = random.randint(0,100)
     logging.info(f'Escritor escribe dato1 = {regionEscritor.recurso.dato1}')
+    time.sleep(1)
+    regionEscritor.recurso.numEscritores -= 1
+
 
 def Lector():
     while True:
@@ -45,13 +46,11 @@ def main():
     nlector = 10
     nescritor = 2
 
-    for k in range(nescritor):
-        threading.Thread(target=Escritor, daemon=True).start()
-
     for k in range(nlector):
         threading.Thread(target=Lector, daemon=True).start()
 
-
+    for k in range(nescritor):
+        threading.Thread(target=Escritor, daemon=True).start()
 
     time.sleep(300)
 

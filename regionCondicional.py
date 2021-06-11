@@ -126,7 +126,7 @@ class RegionCondicional():
     Pasos Para implementar una región condicional:
 
     1 - Agrupar las variables y objetos compartidos en una "instancia" de una clase derivada de la clase Recurso
-        Por ej:     #Declarar la clase rerivada de Recurso
+        Por ej:     #Declarar la clase derivada de Recurso
                     class miRecurso(Recurso):
                         miVariable1 = 0
                         miLista = []
